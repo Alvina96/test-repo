@@ -1,0 +1,55 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redis</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      axios
+        .get("http://localhost:8000/api/redis")
+        .then(response => {
+          console.log(response.data);
+          let block=document.getElementById('response').innerHTML;
+          if (response.data.code==200) {
+              let mapped = response.data.data.map(val=>{
+                  let v=val.split(':')[0];
+                  document.getElementById('response').insertAdjacentHTML('beforeend','<div class="col-sm-4 " id="'+v+'"><li>'+val+'<a onclick=\"remove(\'' + v + '\');\" style="text-decoration:none;color:red;float:right;cursor:pointer">Delete</a></li><hr></div>');
+               })
+          } else {
+              document.getElementById('response').insertAdjacentHTML('beforeend','<div class="col-sm-4 " ><p>Nothing to show</p></div>');
+          }
+
+        })
+        .catch(error => console.error(error));
+        function remove(val) {
+            let text = "Вы действительно хотите удалить?";
+                if (confirm(text) == true) {
+                    element=document.getElementById(val);
+                    element.remove();
+                    axios
+                      .get('http://localhost:8000/api/redis/'+val)
+                      .then(response => {
+                        let block=document.getElementById('response').innerHTML;
+                     })
+                      .catch(error => console.error(error));
+                }
+
+        }
+    </script>
+  </head>
+
+  <body>
+      <div class="container">
+          <div class="row ">
+              <div style="margin:auto;width:20%;padding-top:5%">
+                  <h1>Data</h1>
+                     <div id="response">
+                     </div>
+              </div>
+          </div>
+      </div>
+  </body>
+</html>
